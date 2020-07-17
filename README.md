@@ -16,17 +16,17 @@ Notes:
  * REST API is stateless
 
 ## How to choose between REST API and RPC
-https://cloud.google.com/blog/products/application-development/rest-vs-rpc-what-problems-are-you-trying-to-solve-with-your-apis
-https://etherealbits.com/2012/12/debunking-the-myths-of-rpc-rest/
-https://apihandyman.io/do-you-really-know-why-you-prefer-rest-over-rpc/
-https://apisyouwonthate.com/blog/picking-the-right-api-paradigm
-https://www.smashingmagazine.com/2016/09/understanding-rest-and-rpc-for-http-apis/
-"If an API is mostly actions, maybe it should be RPC.
- If an API is mostly CRUD and is manipulating related data, maybe it should be REST."
+ * https://cloud.google.com/blog/products/application-development/rest-vs-rpc-what-problems-are-you-trying-to-solve-with-your-apis
+ * https://etherealbits.com/2012/12/debunking-the-myths-of-rpc-rest/
+ * https://apihandyman.io/do-you-really-know-why-you-prefer-rest-over-rpc/
+ * https://apisyouwonthate.com/blog/picking-the-right-api-paradigm
+ * https://www.smashingmagazine.com/2016/09/understanding-rest-and-rpc-for-http-apis/<BR>
+    "If an API is mostly actions, maybe it should be RPC.<BR>
+     If an API is mostly CRUD and is manipulating related data, maybe it should be REST."
 
 
 ## rabbitMQ with Python and Docker
 
-send-recv queue minimal demo:
-https://github.com/dmaze/docker-rabbitmq-example
+send-recv queue minimal demo:<BR>
+https://github.com/dmaze/docker-rabbitmq-example<BR>
 may want to use "depends_on" in docker-compose; see https://stackoverflow.com/a/61524908/1164295
