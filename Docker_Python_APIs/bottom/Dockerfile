@@ -1,0 +1,26 @@
+
+FROM phusion/baseimage:0.11
+
+# PYTHONDONTWRITEBYTECODE: Prevents Python from writing pyc files to disk (equivalent to python -B option)
+ENV PYTHONDONTWRITEBYTECODE 1
+
+# https://docs.docker.com/engine/reference/builder/#run
+RUN apt-get update && \
+    apt-get install -y \
+# text editing
+               vim \
+               python3 \
+               python3-pip \
+               python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt /tmp
+RUN pip3 install -r /tmp/requirements.txt
+
+WORKDIR /opt
+COPY bottom.py /opt
+
+#RUN echo "alias python=python3" > /home/appuser/.bashrc
+#RUN bash -l /home/appuser/.bashrc
+
+CMD ["python3", "/opt/bottom.py"]

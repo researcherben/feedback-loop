@@ -1,0 +1,35 @@
+== using files as interface and semaphores ==
+There are no queues, so every dependency is blocking.
+A full cycle must be completed before the next step from top
+
+The "top/middle/bottom" is a three-layer demo of feedback loops
+
+
+                   +-------------+
+                   |  top.py     +---------> top.log
+                   +--+--------+-+
+        lower_output  |        ^  lower_input
+                      |        |
+  +-------------------+-+   +--+-----------------+
+  |  from_top_to_middle |   | from_middle_to_top |
+  +-------------------+-+   +--+-----------------+
+                      |        |
+        upper_input   v        |  upper_output
+                   +--+--------+--+
+                   |  middle.py   +--------> middle.log
+                   +--+--------+--+
+        lower_output  |        ^  lower_input
+                      |        |
++---------------------+-+   +--+--------------------+
+| from_middle_to_bottom |   | from_bottom_to_middle |
++---------------------+-+   +--+--------------------+
+                      |        |
+        upper_input   v        |  upper_output
+                   +--+--------+--+
+                   |  bottom.py   +--------> bottom.log
+                   +--+-----------+
+                      |
+                      v
+                      result.dat
+
+http://asciiflow.com/

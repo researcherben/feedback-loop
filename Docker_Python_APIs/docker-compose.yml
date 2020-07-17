@@ -1,0 +1,53 @@
+
+version: '2'
+
+services:
+  top:
+    # If needed, Docker Compose will automatically run top/Dockerfile.
+    build: top
+    # Run this container on a private network
+    # This is necessary for magic Docker DNS to work: other containers
+    # also running on this network will see a host name "bottom"
+    # (the name of this section) and the internal ports, even though
+    # that's not explicitly published.
+    networks:
+      - network
+    volumes:
+      - .:/scratch
+    ports:
+      - '5000:5000'
+  middle:
+    # If needed, Docker Compose will automatically run bottom/Dockerfile.
+    build: middle
+#    restart: on-failure
+#    depends_on:
+#      - top
+    # Run this container on a private network
+    # This is necessary for magic Docker DNS to work: other containers
+    # also running on this network will see a host name "bottom"
+    # (the name of this section) and the internal ports, even though
+    # that's not explicitly published.
+    networks:
+      - network
+    volumes:
+      - .:/scratch
+  bottom:
+    # If needed, Docker Compose will automatically run bottom/Dockerfile.
+    build: bottom
+#    restart: on-failure
+#    depends_on:
+#      - middle
+    # Run this container on a private network
+    # This is necessary for magic Docker DNS to work: other containers
+    # also running on this network will see a host name "bottom"
+    # (the name of this section) and the internal ports, even though
+    # that's not explicitly published.
+    networks:
+      - network
+    volumes:
+      - .:/scratch
+
+networks:
+  # Declare our private network.  We must declare one for the magic
+  # Docker DNS to work, but otherwise its default settings are fine.
+  network: {}
