@@ -1,4 +1,8 @@
-# brainstorming options
+# about
+
+create feedback loops with distinct applications
+
+## brainstorming options
 how to implement feedback loops with modular components
  * files on disk as messaging queues
  * Docker container per module with API calls
