@@ -12,6 +12,7 @@ RUN apt-get update && \
                build-essential \
          python3-pip \
          python3-dev \
+         screen \
   && rm -rf /var/lib/apt/lists/*
 
 #COPY requirements.txt /tmp
