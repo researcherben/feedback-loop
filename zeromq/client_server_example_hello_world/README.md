@@ -5,7 +5,7 @@ In one terminal, use
 make docker_live
 ```
 
-to get the master started. In that container, start the server
+to get the master started. In that container, launch `screen` and then start the server
 
 ```bash
 python3 server_zmq.py

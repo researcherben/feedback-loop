@@ -21,5 +21,6 @@ docker_build:
 
 docker_live:
 	docker run -it --rm -v`pwd`:/scratch \
+	-w /scratch \
 	--entrypoint='' \
 	zmq_phusion /bin/bash
