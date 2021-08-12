@@ -2,13 +2,13 @@
 In one terminal, use
 
 ```bash
-make docker_live
+make docker
 ```
 
 to get the master started. In that container, launch `screen` and then start the server
 
 ```bash
-python3 server_zmq.py
+python3 server_zmq_5555.py 
 ```
 
 Then, in a separate terminal, use
