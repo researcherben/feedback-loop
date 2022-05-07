@@ -1,33 +1,66 @@
 #!/usr/bin/env python3
 
 import time
-import datetime
-import json
 import random
-import requests
+import sys
+import json
 
 """
+state machine using functions below for transitions between states
+ and JSON file to track current state
 """
 
-origin_hostName = "localhost"
-origin_serverPort = 1044
-origin_url = 'http://'+origin_hostName+':'+str(origin_serverPort)
+def start() -> str:
+    """
+    """
+    state = query_state()
+    if state=="on":
+        return "already on"
+    else:
+        with open("state.json","w") as file_handle:
+            json.dump({"state": "on", "valid states": ["on", "off"]}, file_handle)
+    return "started"
 
-met_hostName = "localhost"
-met_serverPort = 1033
-met_url = 'http://'+met_hostName+':'+str(met_serverPort)
+def stop() -> str:
+    """
+    """
+    state = query_state()
+    if state=="off":
+        return "already off"
+    else:
+        with open("state.json","w") as file_handle:
+            json.dump({"state": "off", "valid states": ["on", "off"]}, file_handle)
+    return "stopped"
 
-headers = {"charset": "utf-8", "Content-Type": "application/json"}
 
+def query_state() -> str:
+    """
+    """
+    with open("state.json","r") as file_handle:
+        data = json.load(file_handle)
 
-if __name__ == "__main__":
+    return data["state"]
 
-    r = requests.post(origin_url, json={"hello":"world"}, headers=headers)
-    #print(r.text)
-    #print(r.json())
+def doit(val: int) -> int:
+    """
+    """
+    if query_state()=="on":
+        try:
+            time.sleep(2)
+        except KeyboardInterrupt:
+            print("exiting")
+            exit(0)
 
-    while(True):
-        # get next data
+        return val*2
+    else:
+        return None
+
+    return None
+
+def run(origin_url:str, met_url: str) -> None:
+    while True:
+
+        r = requests.post(origin_url, json={"hello":"world"}, headers=headers)
         data = r.json()
         print("got",data)
 
@@ -36,15 +69,20 @@ if __name__ == "__main__":
 
         r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now}, headers=headers)
 
-        try:
-            time.sleep(1)
-        except KeyboardInterrupt:
-            print("exiting")
-            exit(0)
+        if "msg" in data.keys():
+            print("msg = ",str(data["msg"]))
+        else:
+            res = runme.doit(data["jb"]['val'])
+            if res:
+                r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now, "res": res}, headers=headers)
+
 
         data["a number"] = data["a number"]*2
         print("res_dict=",data)
 
         r = requests.post(origin_url, json=data, headers=headers)
+    return
 
-        print("\n")
+if __name__ == "__main__":
+
+    print("call 'doit' or 'query_state' function")
