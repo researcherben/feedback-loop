@@ -57,31 +57,6 @@ def doit(val: int) -> int:
 
     return None
 
-def run(origin_url:str, met_url: str) -> None:
-    while True:
-
-        r = requests.post(origin_url, json={"hello":"world"}, headers=headers)
-        data = r.json()
-        print("got",data)
-
-        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print("now=",now)
-
-        r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now}, headers=headers)
-
-        if "msg" in data.keys():
-            print("msg = ",str(data["msg"]))
-        else:
-            res = runme.doit(data["jb"]['val'])
-            if res:
-                r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now, "res": res}, headers=headers)
-
-
-        data["a number"] = data["a number"]*2
-        print("res_dict=",data)
-
-        r = requests.post(origin_url, json=data, headers=headers)
-    return
 
 if __name__ == "__main__":
 
