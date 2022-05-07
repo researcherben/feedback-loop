@@ -51,7 +51,7 @@ def doit(val: int) -> int:
             print("exiting")
             exit(0)
 
-        return val*2
+        return str(int(val)*2)
     else:
         return None
 

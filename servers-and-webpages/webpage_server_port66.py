@@ -72,35 +72,11 @@ class MyServer(SimpleHTTPRequestHandler):
 
         # Extract query param
         query_components = parse_qs(urlparse(self.path).query)
-
+        print("query_components =", query_components)
 
         #if self.path == "/":
         #self.path = '/webpages/server_options.html'
 
-        if runme.query_state()=="on":
-            # get next from que
-            print("on!")
-            r = requests.post(origin_url, json={"hello":"world"}, headers=headers)
-            data = r.json()
-            print("got",data)
-
-            now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print("now=",now)
-
-            r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now}, headers=headers)
-
-            if "msg" in data.keys():
-                print("msg = ",str(data["msg"]))
-            else:
-                # TODO: kill this if an interrupt comes in
-                # https://blog.miguelgrinberg.com/post/how-to-make-python-wait
-                # https://www.google.com/search?q=python+launch+function+in+background+wait+for+response
-                res = runme.doit(data["jb"]['val'])
-                if res:
-                    r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now, "res": res}, headers=headers)
-
-
-        print("query_components =", query_components)
 
         if 'action' in query_components:
             action = query_components["action"][0]
@@ -114,6 +90,39 @@ class MyServer(SimpleHTTPRequestHandler):
                 #self.path = 'error_unrecognized_action.html'
                 print("action =", action)
                 msg = "ERROR: unrecognized action"
+        else: # no action specified
+            print("no action specified; not going to do anything")
+            pass
+
+
+        if runme.query_state()=="on":
+            # get next from que
+            print("on!")
+            print("sending request to user")
+            r = requests.post(origin_url, json={"hello":"world"}, headers=headers)
+            data = r.json()
+            print("got",data)
+
+            now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#            print("now=",now)
+
+            print("sending record to met")
+            r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now}, headers=headers)
+
+
+            if "msg" in data.keys():
+                print("msg = ",str(data["msg"]))
+            else:
+                # TODO: kill this if an interrupt comes in via POST
+                # https://blog.miguelgrinberg.com/post/how-to-make-python-wait
+                # https://www.google.com/search?q=python+launch+function+in+background+wait+for+response
+                print("running")
+                res = runme.doit(data["jb"]['val'])
+                # TODO: send fake tts per phase to met
+                print("res =", res)
+                if res:
+                    print("sending res to met")
+                    r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now, "res": res}, headers=headers)
 
             """
                 r = requests.post(origin_url, json={"hello":"world"}, headers=headers)
@@ -132,8 +141,6 @@ class MyServer(SimpleHTTPRequestHandler):
             # # Writing the HTML contents with UTF-8
             # self.wfile.write(bytes("hello", "utf8"))
             # return
-        else: # no action specified
-            pass
 
         self.send_response(200)
         self.send_header("Content-type", "text/html")
@@ -144,8 +151,10 @@ class MyServer(SimpleHTTPRequestHandler):
         # https://en.wikipedia.org/wiki/Meta_refresh
 #        self.wfile.write(bytes("       <meta http-equiv=\"refresh\" content=\"5\" />\n", "utf-8"))
         self.wfile.write(bytes("    </head>\n", "utf-8"))
-        self.wfile.write(bytes("<p>Request: %s</p>\n" % self.path, "utf-8"))
         self.wfile.write(bytes("<body>\n", "utf-8"))
+        self.wfile.write(bytes("<p>Request: %s<BR>\n" % self.path, "utf-8"))
+        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.wfile.write(bytes("at %s</p>\n" % now, "utf-8"))
         self.wfile.write(bytes("\n", "utf-8"))
         self.wfile.write(bytes("<H2>S</H2>\n", "utf-8"))
 
@@ -171,8 +180,6 @@ class MyServer(SimpleHTTPRequestHandler):
     def do_POST(self):
         #print('content type:',self.headers.get('content-type'))
 
-        val = random.randint(3,10)
-
         # refuse to receive non-json content
         if self.headers.get('content-type') != 'application/json':
             self.send_response(400)
@@ -189,7 +196,6 @@ class MyServer(SimpleHTTPRequestHandler):
         print("message = ", message)
 
 
-        # send the message back
 
         self.send_response(200)
         self.send_header("Content-type", "text/html")

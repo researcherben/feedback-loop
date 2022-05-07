@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
+import os
 import json
 import random
+import datetime
+
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 """
 This web server returns an HTML file (for GET requests) with a random value
@@ -22,29 +28,71 @@ https://stackabuse.com/serving-files-with-pythons-simplehttpserver-module/
 hostName = "0.0.0.0" # an address used to refer to all IP addresses on the same machine
 serverPort = 1033
 
+res_filename = "res.dat"
+
+headers = {"charset": "utf-8", "Content-Type": "application/json"}
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         #print('content type:',self.headers.get('content-type'))
 
-        val = random.randint(3,10)
+        msg = None
+
+        print("self.path =",self.path)
+        # self.path = /
+        # query_components = {}
+        # or
+        # self.path = /?action=yes
+        # query_components = {'action': ['yes']}
+
+        # Extract query param
+        query_components = parse_qs(urlparse(self.path).query)
+        print("query_components =", query_components)
+
+        #if self.path == "/":
+        #self.path = '/webpages/user_options.html'
+
+        if 'action' in query_components:
+            action = query_components["action"][0]
+            if action == "clear":
+                if os.path.exists(res_filename):
+                    os.remove(res_filename)
+            else:
+                print("action =", action)
+                #self.path = 'error_unrecognized_action.html'
+                msg = "ERROR: unrecognized action"
+
+
+        data = []
+        if os.path.exists(res_filename):
+            with open(res_filename,"r") as file_handle:
+                data = file_handle.read().split('\n')
+
 
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
-        self.wfile.write(bytes("<html><head><title>met 33</title></head>", "utf-8"))
-        self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
-        self.wfile.write(bytes("<body>", "utf-8"))
-        self.wfile.write(bytes("<p>This is an example web server.</p>", "utf-8"))
-        self.wfile.write(bytes("<p>val = "+str(val)+"</p>", "utf-8"))
-        self.wfile.write(bytes("</body></html>", "utf-8"))
+        self.wfile.write(bytes("<html>\n<head>\n<title>\nmet 33\n</title>\n</head>\n", "utf-8"))
+        self.wfile.write(bytes("<body>\n", "utf-8"))
+        self.wfile.write(bytes("<p>Request: %s<BR>\n" % self.path, "utf-8"))
+        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.wfile.write(bytes("at %s</p>\n" % now, "utf-8"))
+        self.wfile.write(bytes("<H2>M</H2>\n", "utf-8"))
+        self.wfile.write(bytes("<p>actions</p>\n", "utf-8"))
+        self.wfile.write(bytes("<UL>\n", "utf-8"))
+        self.wfile.write(bytes("  <LI><a href=\"http://localhost:1033?action=clear\">clear history</a></LI>\n", "utf-8"))
+        self.wfile.write(bytes("</UL>\n", "utf-8"))
+        self.wfile.write(bytes("<P>Log entries:</P>\n", "utf-8"))
+        for line in data:
+            self.wfile.write(bytes(line+"<BR>\n", "utf-8"))
+        if msg:
+            self.wfile.write(bytes("<p>MESSAGE = "+str(msg)+"</p>\n", "utf-8"))
+        self.wfile.write(bytes("</body>\n</html>\n", "utf-8"))
 
 
     # POST echoes the message adding a JSON field
     def do_POST(self):
         #print('content type:',self.headers.get('content-type'))
-
-        val = random.randint(3,10)
 
         # refuse to receive non-json content
         if self.headers.get('content-type') != 'application/json':
@@ -61,9 +109,11 @@ class MyServer(BaseHTTPRequestHandler):
 
         print("message = ", message)
 
+        with open("res.dat","a") as file_handle:
+            file_handle.write(str(message)+"\n")
+
 
         # send the message back
-
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()

@@ -32,6 +32,10 @@ https://stackabuse.com/serving-files-with-pythons-simplehttpserver-module/
 hostName = "0.0.0.0" # an address used to refer to all IP addresses on the same machine
 serverPort = 1044
 
+headers = {"charset": "utf-8", "Content-Type": "application/json"}
+
+server_URL = "http://localhost:1066"
+
 # # https://stackoverflow.com/a/39801780/1164295
 # web_dir = os.path.join(os.path.dirname(__file__), 'webpages')
 # os.chdir(web_dir)
@@ -125,14 +129,29 @@ class MyServer(SimpleHTTPRequestHandler):
             action = query_components["action"][0]
             if action == "new":
                 val = query_components["val"][0] # user input
+                print("val =",val)
                 data = read_que("que.json")
                 data["jb"].append({"id": str(max_current_id(data)+1), "pr": "norm", "val":str(val)})
                 print("revised data =",data)
                 write_que("que.json", data)
                 msg = list_qu("que.json")
 
+            elif action == "clearq":
+                write_que("que.json", {"jb": []})
+
+            elif action == "terminate_current":
+                r = requests.post(server_URL, json={"msg": "halt"}, headers=headers)
+                print(r.json())
+
             elif action == "inter":
                 val = query_components["val"][0]
+                print("val =",val)
+                data = read_que("que.json")
+                jb = {"id": str(max_current_id(data)+1), "pr": "inter", "val":str(val)}
+                print("jb =",jb)
+                r = requests.post(server_URL, json=jb, headers=headers)
+                print(r.json())
+
             elif action == "listq":
                 msg = list_qu("que.json")
 
@@ -169,14 +188,18 @@ class MyServer(SimpleHTTPRequestHandler):
         # https://en.wikipedia.org/wiki/Meta_refresh
 #        self.wfile.write(bytes("       <meta http-equiv=\"refresh\" content=\"5\" />\n", "utf-8"))
         self.wfile.write(bytes("    </head>\n", "utf-8"))
-        self.wfile.write(bytes("<p>Request: %s</p>\n" % self.path, "utf-8"))
         self.wfile.write(bytes("<body>\n", "utf-8"))
+        self.wfile.write(bytes("<p>Request: %s<BR>\n" % self.path, "utf-8"))
+        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.wfile.write(bytes("at %s</p>\n" % now, "utf-8"))
         self.wfile.write(bytes("\n", "utf-8"))
         self.wfile.write(bytes("<H2>U</H2>\n", "utf-8"))
         self.wfile.write(bytes("  <P>actions for u:</P>\n", "utf-8"))
         self.wfile.write(bytes("    <UL>\n", "utf-8"))
         self.wfile.write(bytes("      <LI><a href=\"http://localhost:1044?action=new&val=6\">new</a></LI>\n", "utf-8"))
         self.wfile.write(bytes("      <LI><a href=\"http://localhost:1044?action=inter&val=7\">inter</a></LI>\n", "utf-8"))
+        self.wfile.write(bytes("      <LI><a href=\"http://localhost:1044?action=terminate_current\">terminate current</a></LI>\n", "utf-8"))
+        self.wfile.write(bytes("      <LI><a href=\"http://localhost:1044?action=clearq\">clear q</a></LI>\n", "utf-8"))
         self.wfile.write(bytes("      <LI><a href=\"http://localhost:1044?action=listq\">listq</a></LI>\n", "utf-8"))
         self.wfile.write(bytes("    </UL>\n", "utf-8"))
         if msg:
