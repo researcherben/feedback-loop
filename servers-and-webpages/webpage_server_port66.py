@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from threading import Thread # launch function without waiting for completion
 import time
 import json
 import random
@@ -30,7 +31,7 @@ https://stackabuse.com/serving-files-with-pythons-simplehttpserver-module/
 
 #hostName = "localhost" # if this is used, then server binds to localhost:port and is only accessible inside a container
 hostName = "0.0.0.0" # an address used to refer to all IP addresses on the same machine
-serverPort = 1066
+port = 1066
 
 # # https://stackoverflow.com/a/39801780/1164295
 # web_dir = os.path.join(os.path.dirname(__file__), 'webpages')
@@ -113,16 +114,20 @@ class MyServer(SimpleHTTPRequestHandler):
             if "msg" in data.keys():
                 print("msg = ",str(data["msg"]))
             else:
-                # TODO: kill this if an interrupt comes in via POST
+                # TODO: kill runme if an interrupt comes in via POST
                 # https://blog.miguelgrinberg.com/post/how-to-make-python-wait
                 # https://www.google.com/search?q=python+launch+function+in+background+wait+for+response
                 print("running")
-                res = runme.doit(data["jb"]['val'])
-                # TODO: send fake tts per phase to met
-                print("res =", res)
-                if res:
-                    print("sending res to met")
-                    r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now, "res": res}, headers=headers)
+                print("data",data)
+
+                # https://stackoverflow.com/a/55639126/1164295
+                Thread(target=runme.doit, args=(int(data["jb"]['val']),
+                                                data["jb"]['id'],
+                                                data['jb']['pr'],
+                                                met_url,
+                                                headers, )).start()
+
+                #res = runme.doit(data["jb"]['val'])
 
             """
                 r = requests.post(origin_url, json={"hello":"world"}, headers=headers)
@@ -157,6 +162,7 @@ class MyServer(SimpleHTTPRequestHandler):
         self.wfile.write(bytes("at %s</p>\n" % now, "utf-8"))
         self.wfile.write(bytes("\n", "utf-8"))
         self.wfile.write(bytes("<H2>S</H2>\n", "utf-8"))
+        self.wfile.write(bytes("<a href=\"http://localhost:1066\">reload page</a> runs next available job\n", "utf-8"))
 
         current_status = runme.query_state()
         self.wfile.write(bytes("<P>status: "+str(current_status)+"</P>\n", "utf-8"))
@@ -191,29 +197,42 @@ class MyServer(SimpleHTTPRequestHandler):
 
         #print('length:',self.headers.get('content-length'))
 
-        message = json.loads(self.rfile.read(length))
+        interrupt_message = json.loads(self.rfile.read(length))
 
-        print("message = ", message)
+        print("interrupt_message = ", interrupt_message)
+
+        if "val" in interrupt_message.keys():
+            if "pr" in interrupt_message.keys():
+
+                now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    #            print("now=",now)
+
+                print("sending interrupt_message to met")
+                r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now, "msg": str(interrupt_message)}, headers=headers)
+
+                # https://stackoverflow.com/a/55639126/1164295
+                Thread(target=runme.doit, args=(int(interrupt_message['val']),
+                                                interrupt_message['id'],
+                                                interrupt_message['pr'],
+                                                met_url,
+                                                headers, )).start()
+            else:
+                print("ERROR: incorrect priority")
 
 
-
+        print("sending ack")
         self.send_response(200)
-        self.send_header("Content-type", "text/html")
+        self.send_header("Content-type", "application/json")
         self.end_headers()
-        self.wfile.write(bytes("<html><head><title>server 66</title></head>", "utf-8"))
-        self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
-        self.wfile.write(bytes("<body>", "utf-8"))
-        self.wfile.write(bytes(json.dumps(message)+"\n","utf-8"))
-        self.wfile.write(bytes("</body></html>", "utf-8"))
-
+        self.wfile.write(bytes(json.dumps({"msg": "ack"})+"\n","utf-8"))
 
 
 #        self.wfile.write(bytes(json.dumps({'hello': 'world', 'received': 'ok'}),"utf-8"))
 
 
 if __name__ == "__main__":
-    webServer = HTTPServer((hostName, serverPort), MyServer)
-    print("Server started http://%s:%s" % (hostName, serverPort))
+    webServer = HTTPServer((hostName, port), MyServer)
+    print("Server started http://%s:%s" % (hostName, port))
 
     try:
         webServer.serve_forever()

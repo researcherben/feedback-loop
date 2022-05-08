@@ -26,7 +26,7 @@ https://stackabuse.com/serving-files-with-pythons-simplehttpserver-module/
 
 #hostName = "localhost" # if this is used, then server binds to localhost:port and is only accessible inside a container
 hostName = "0.0.0.0" # an address used to refer to all IP addresses on the same machine
-serverPort = 1033
+port = 1033
 
 res_filename = "res.dat"
 
@@ -78,6 +78,7 @@ class MyServer(BaseHTTPRequestHandler):
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.wfile.write(bytes("at %s</p>\n" % now, "utf-8"))
         self.wfile.write(bytes("<H2>M</H2>\n", "utf-8"))
+        self.wfile.write(bytes("<a href=\"http://localhost:1033\">reload page</a> to view current logs\n", "utf-8"))
         self.wfile.write(bytes("<p>actions</p>\n", "utf-8"))
         self.wfile.write(bytes("<UL>\n", "utf-8"))
         self.wfile.write(bytes("  <LI><a href=\"http://localhost:1033?action=clear\">clear history</a></LI>\n", "utf-8"))
@@ -129,8 +130,8 @@ class MyServer(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    webServer = HTTPServer((hostName, serverPort), MyServer)
-    print("Server started http://%s:%s" % (hostName, serverPort))
+    webServer = HTTPServer((hostName, port), MyServer)
+    print("Server started http://%s:%s" % (hostName, port))
 
     try:
         webServer.serve_forever()

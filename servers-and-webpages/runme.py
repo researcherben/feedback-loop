@@ -4,6 +4,8 @@ import time
 import random
 import sys
 import json
+import requests
+import datetime
 
 """
 state machine using functions below for transitions between states
@@ -41,7 +43,7 @@ def query_state() -> str:
 
     return data["state"]
 
-def doit(val: int) -> int:
+def doit(val: int, id: str, priority: str, met_url:str, headers: dict) -> None:
     """
     """
     if query_state()=="on":
@@ -51,9 +53,19 @@ def doit(val: int) -> int:
             print("exiting")
             exit(0)
 
-        return str(int(val)*2)
-    else:
-        return None
+        # TODO: send fake tts per phase to met
+
+        res = str(int(val)*2)
+
+        print("res =", res)
+
+        print("sending res to met")
+        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        r = requests.post(met_url, json={"%Y-%m-%d %H:%M:%S":now,
+                "val": val,
+                "res": res,
+                "id": id, "pr": priority}, headers=headers)
+
 
     return None
 
