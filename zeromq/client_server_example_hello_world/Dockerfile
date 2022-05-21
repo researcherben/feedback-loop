@@ -15,10 +15,9 @@ RUN apt-get update && \
          screen \
   && rm -rf /var/lib/apt/lists/*
 
-#COPY requirements.txt /tmp
-#RUN pip3 install -r /tmp/requirements.txt
+COPY requirements.txt requirements.txt 
+RUN pip3 install -r requirements.txt
 
-RUN pip3 install pyzmq jsonschema
 
 #RUN useradd auser
 #USER auser

@@ -28,7 +28,7 @@ docker_live:
 
 
 user:
-	docker run -it --rm -v`pwd`:/scratch -p 1066:1066 -p 1044:1044 -p 1033:1033 -w/scratch py_webservices python3 webpage_user_port44.py
+	docker run -it --rm -v`pwd`:/scratch -p 1066:1066 -p 1044:1044 -p 1033:1033 -w/scratch  $(mytag) python3 webpage_user_port44.py
 
 # the following assumes "user" already ran
 met:
@@ -37,3 +37,6 @@ met:
 
 server:
 	docker exec -it `docker ps | grep py_web | cut -d' ' -f1` python3 webpage_server_port66.py
+
+clean:
+	rm -rf __pycache__ *.dat

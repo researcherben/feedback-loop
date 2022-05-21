@@ -13,9 +13,8 @@ RUN yum -y install python3-pip
 
 RUN yum -y groupinstall 'Development Tools'
 
-RUN pip3 install requests
-
-RUN pip3 install black
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
 #EXPOSE 1044
 #EXPOSE 1033

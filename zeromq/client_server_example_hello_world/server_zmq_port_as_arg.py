@@ -11,16 +11,16 @@ import sys
 
 context = zmq.Context()
 
-print('arg count = ', len(sys.argv))
-if len(sys.argv)!=2:
+print("arg count = ", len(sys.argv))
+if len(sys.argv) != 2:
     print("incorrect argument supplied")
 
 port_as_str = sys.argv[1]
-print('port_as_str =', port_as_str)
+print("port_as_str =", port_as_str)
 
 # REP will block on recv unless it has received a request.
 socket = context.socket(zmq.REP)
-socket.bind("tcp://*:"+port_as_str)
+socket.bind("tcp://*:" + port_as_str)
 
 while True:
     #  Wait for next request from client

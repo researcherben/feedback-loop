@@ -1,4 +1,4 @@
-
+mytag=zmq_phusion
 
 # 
 .PHONY: help clean webserver typehints flake8 pylint doctest mccabe
@@ -17,10 +17,10 @@ help:
 
 docker: docker_build docker_live
 docker_build:
-	docker build -t zmq_phusion .
+	docker build -t $(mytag) .
 
 docker_live:
 	docker run -it --rm -v`pwd`:/scratch \
 	-w /scratch \
 	--entrypoint='' \
-	zmq_phusion /bin/bash
+	$(mytag) /bin/bash
