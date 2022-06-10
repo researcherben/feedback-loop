@@ -27,6 +27,9 @@ docker_live:
 #	docker run --rm -v`pwd`:/scratch -w:/scratch $(mytag) make webpages
 
 
+viz_Makefile:
+	makefile2dot | dot -Tpng > Makefile_viz.png
+
 user:
 	docker run -it --rm -v`pwd`:/scratch -p 1066:1066 -p 1044:1044 -p 1033:1033 -w/scratch  $(mytag) python3 webpage_user_port44.py
 

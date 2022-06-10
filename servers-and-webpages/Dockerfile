@@ -13,6 +13,9 @@ RUN yum -y install python3-pip
 
 RUN yum -y groupinstall 'Development Tools'
 
+# "dot" is needed for makefile2dot
+RUN yum -y install graphviz
+
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
