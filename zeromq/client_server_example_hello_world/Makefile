@@ -24,3 +24,12 @@ docker_live:
 	-w /scratch \
 	--entrypoint='' \
 	$(mytag) /bin/bash
+
+5555:
+	docker run -it --rm -v`pwd`:/scratch -p 5555:5555 -p 5556:5556 -w/scratch $(mytag) python3 server_zmq_5555.py
+
+5556: 
+	docker exec -it `docker ps | grep zmq_ph | cut -d' ' -f1` python3 server_zmq_5556.py
+
+client:
+	docker exec -it `docker ps | grep zmq_ph | cut -d' ' -f1` python3 client_zmq.py

@@ -6,7 +6,7 @@ create feedback loops with distinct applications
 how to implement feedback loops with modular components
  * files on disk as messaging queues
  * Docker container per module with API calls
- * rabbitMQ with RPC pattern; see https://www.rabbitmq.com/getstarted.html and https://www.rabbitmq.com/tutorials/tutorial-six-python.html
+ * rabbitMQ with RPC pattern; see [https://www.rabbitmq.com/getstarted.html](https://www.rabbitmq.com/getstarted.html) and [https://www.rabbitmq.com/tutorials/tutorial-six-python.html](https://www.rabbitmq.com/tutorials/tutorial-six-python.html)
  * sockets; see https://docs.python.org/3/howto/sockets.html and https://realpython.com/python-sockets/ and https://www.geeksforgeeks.org/socket-programming-python/
  * pure Python RPC; see https://www.tutorialspoint.com/python_network_programming/python_remote_procedure_call.htm
 

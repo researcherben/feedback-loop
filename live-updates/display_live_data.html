@@ -1,0 +1,55 @@
+
+<HTML>
+<BODY>
+
+<P>
+  view count: <span id="viewCount">0</span> as of <span id="viewCount_date"></span>
+</P>
+
+<!-- other helpful tutorials:
+https://www.digitalocean.com/community/tutorials/how-to-use-the-javascript-fetch-api-to-get-data
+https://openjavascript.info/2022/01/03/using-fetch-to-make-get-post-put-and-delete-requests/
+https://jasonwatmore.com/post/2021/09/20/fetch-http-put-request-examples
+-->
+
+<!--
+
+fetch('http://localhost:1044/', {
+  method: "PUT",
+  headers: {'Content-type': 'application/json'},
+  body: JSON.stringify({ title: 'Fetch PUT Request Example' })
+})
+-->
+
+<script>
+  function startLiveUpdate () {
+    const textViewCount = document.getElementById('viewCount');
+    const viewcountDate = document.getElementById('viewCount_date')
+
+    setInterval(function () {
+      // By default, fetch() makes a GET request
+      fetch('http://localhost:1044/').then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        console.log(data)
+          textViewCount.textContent = data.viewCount;
+          // https://tecadmin.net/get-current-date-time-javascript/
+          var today = new Date();
+          // https://stackoverflow.com/a/3605248/1164295
+          var date = today.getFullYear()+'-'+('0'+today.getMonth()+1).slice(-2)+'-'+('0'+today.getDate()).slice(-2);
+          var time = ('0'+today.getHours()).slice(-2) + ":" + ('0'+today.getMinutes()).slice(-2) + ":" + ('0'+today.getSeconds()).slice(-2);
+          var dateTime = date+'_'+time;
+          viewcountDate.textContent = dateTime
+      }).catch(function (error) {
+         console.log(error);
+      });
+    }, 2000);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    startLiveUpdate();
+  });
+</script>
+
+</BODY>
+</HTML>

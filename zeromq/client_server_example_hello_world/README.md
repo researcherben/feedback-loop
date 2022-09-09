@@ -1,26 +1,22 @@
 
-In one terminal, use
+# terminal 1
 
 ```bash
-make docker
+make 5555 
+```
+to get the master started. 
+
+# terminal 2
+```bash
+make 5556
 ```
 
-to get the master started. In that container, launch `screen` and then start the server
+# terminal 3
+
+start the client using
 
 ```bash
-python3 server_zmq_5555.py 
-```
-
-Then, in a separate terminal, use
-
-```bash
-docker exec -it `docker ps | grep zmq_phusion | cut -d' ' -f1` /bin/bash
-```
-
-to enter the running container; then start the client using
-
-```bash
-python3 client_zmq.py
+make client
 ```
 
 
