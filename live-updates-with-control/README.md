@@ -3,8 +3,29 @@
 terminal 1:
 
 ```bash
-background_process_to_update_state_and_metrics.py
+make clean; make ui
 ```
+
+# terminal 2:
+
+```bash
+make background
+```
+
+# terminal 3:
+
+```bash
+make provide_live_data
+```
+
+# terminal 4:
+
+```bash
+make met
+```
+
+
+
 
 ```
 +------------------------+  +---------------------------+ +--------------------------+
