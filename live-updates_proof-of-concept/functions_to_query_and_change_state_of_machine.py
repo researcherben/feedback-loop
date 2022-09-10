@@ -65,7 +65,7 @@ def poweron_machine(name_of_requestor: str, met_url: str, headers: dict) -> str:
         json={
             "%Y-%m-%d %H:%M:%S": current_time(),
             "command received by ": name_of_requestor,
-            "command": "poweron_machine"
+            "command": "poweron_machine",
             "command result": msg_to_return
         },
         headers=headers,
@@ -90,7 +90,7 @@ def poweroff_machine(name_of_requestor: str, met_url: str, headers: dict) -> str
         json={
             "%Y-%m-%d %H:%M:%S": current_time(),
             "command received by ": name_of_requestor,
-            "command": "poweron_machine"
+            "command": "poweron_machine",
             "command result": msg_to_return
         },
         headers=headers,
