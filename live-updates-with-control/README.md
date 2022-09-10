@@ -1,31 +1,39 @@
 
 
-terminal 1:
+# step 1: 
+
+Open 4 terminals in this order:
+
+## terminal 1:
 
 ```bash
 make clean; make ui
 ```
 
-# terminal 2:
+## terminal 2:
 
 ```bash
 make background
 ```
 
-# terminal 3:
+## terminal 3:
 
 ```bash
 make provide_live_data
 ```
 
-# terminal 4:
+## terminal 4:
 
 ```bash
 make met
 ```
 
+# step 2:
+
+Open a web browser to http://localhost:1044 and http://localhost:1033
 
 
+# overview
 
 ```
 +------------------------+  +---------------------------+ +--------------------------+
