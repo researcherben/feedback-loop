@@ -8,11 +8,15 @@
       {{ request_str }}
     </P>
 
-    <P>Pages:</P>
+    <P>Pages for demo:</P>
     <UL>
-      <LI><a href="{{ this_page_URL }}/ui">UI</a></LI>
-      <LI><a href="{{ this_page_URL }}/met">met</a></LI>
-
+      <LI><a href="{{ this_page_URL }}/ui">ui</a></LI>
+      <LI><a href="{{ this_page_URL }}/logs">logs</a></LI>
+    </UL>
+    <P>Admin pages</P>
+    <UL>
+      <LI><a href="{{ this_page_URL }}/livemetrics">current metrics</a></LI>
+    </UL>
 
     {% if msg %}
     <p>MESSAGE = {{ msg }}</p>

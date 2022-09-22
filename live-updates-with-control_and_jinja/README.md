@@ -5,29 +5,68 @@ Revised:
 * use of Jinja templates; see https://zetcode.com/python/jinja/ for tutorial
 
 
-# step 1:
+# to address deadlock of
+# "GET" calling a function that calls "PUT"
+import asyncio
 
-Open 4 terminals in this order:
 
-## terminal 1:
+#https://docs.python.org/3/library/asyncio-subprocess.html
+#https://realpython.com/async-io-python/
 
-```bash
-make clean; make ui
+
+# FQDN causing slow load on Mac OSX
+
+I tried disabling DNS lookups in Python
+
+```python
+# Disable logging DNS lookups
+# https://stackoverflow.com/a/6761844/1164295
+def address_string(self):
+    # https://docs.python.org/3/library/http.server.html#http.server.BaseHTTPRequestHandler.client_address
+    return str(self.client_address[0])
 ```
 
-## terminal 2:
+```python
+# https://stackoverflow.com/a/5273870/1164295
+# https://bugs.python.org/issue6085
+def address_string(self):
+    host, port = self.client_address[:2]
+    #return socket.getfqdn(host)
+    return host
+```
+
+https://stackoverflow.com/a/53143006/1164295
+```bash
+$ sudo scutil --get HostName
+HostName: not set
+$ hostname
+Bens-MacBook-Air.local
+$ sudo scutil --set HostName `hostname`
+```
+
+## step 1:
+
+Open 3 terminals in this order:
+
+### terminal 1:
 
 ```bash
-make background
+make clean; make webserver_port1033.py
+```
+
+### terminal 2:
+
+```bash
+make background_process_to_update_state_and_metrics.py
 ```
 
 ## terminal 3:
 
 ```bash
-make provide_live_data
+make webserver_logging_port1044.py
 ```
 
-# step 2:
+## step 2:
 
 Open a web browser to http://localhost:1044 and http://localhost:1033
 

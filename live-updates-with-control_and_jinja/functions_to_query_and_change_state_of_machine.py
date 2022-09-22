@@ -48,20 +48,23 @@ power-on, shutting-down
 """
 
 
-def poweron_machine(name_of_requestor: str, met_url: str, headers: dict) -> str:
+def poweron_machine(name_of_requestor: str,
+                 send_logs_to_url: str, headers: dict, json_file:str) -> str:
     """ """
-    state = query_state()
+    state = query_state(json_file)
+    print("according to 'query and change.py', state =",state)
 
     if "power-on" in state:
         msg_to_return="INVALID CONTROL SIGNAL RECEIVED: power was already on"
     else:
-        with open("machine_state.json", "w") as file_handle:
+        with open(json_file, "w") as file_handle:
             json.dump({"state": "power-on, booting"}, file_handle)
         msg_to_return="starting boot"
 
     # log this event
+    print("logging power on request to", send_logs_to_url)
     r = requests.post(
-        met_url,
+        send_logs_to_url,
         json={
             "%Y-%m-%d %H:%M:%S": current_time(),
             "command received by ": name_of_requestor,
@@ -70,23 +73,25 @@ def poweron_machine(name_of_requestor: str, met_url: str, headers: dict) -> str:
         },
         headers=headers,
     )
+    print("done with log; returning control")
     return msg_to_return
 
 
-def poweroff_machine(name_of_requestor: str, met_url: str, headers: dict) -> str:
+def poweroff_machine(name_of_requestor: str,
+        send_logs_to_url: str, headers: dict, json_file:str) -> str:
     """ """
-    state = query_state()
+    state = query_state(json_file)
 
     if state == "power-off":
         msg_to_return= "INVALID CONTROL SIGNAL RECEIVED: power was already off"
     else:
-        with open("machine_state.json", "w") as file_handle:
+        with open(json_file, "w") as file_handle:
             json.dump({"state": "power-on, shutting-down"}, file_handle)
         msg_to_return= "initiating power-off"
 
     # log this event
     r = requests.post(
-        met_url,
+        send_logs_to_url,
         json={
             "%Y-%m-%d %H:%M:%S": current_time(),
             "command received by ": name_of_requestor,
@@ -103,24 +108,25 @@ def current_time() -> str:
     """
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def query_state() -> str:
+def query_state(json_file:str) -> str:
     """
     what is the state?
     """
     try:
-        with open("machine_state.json", "r") as file_handle:
+        with open(json_file, "r") as file_handle:
             data = json.load(file_handle)
     except FileNotFoundError:
         data = {"state": "power-off"}
-        with open("machine_state.json", "w") as file_handle:
+        with open(json_file, "w") as file_handle:
             json.dump(data, file_handle)
 
     return data["state"]
 
 
-def doit(val: int, id: str, priority: str, met_url: str, headers: dict) -> None:
+def doit(name:str,val: int, id: str,
+         priority: str, send_logs_to_url: str, headers: dict, json_file:str) -> None:
     """ """
-    if query_state() == "power-on, idle":
+    if query_state(json_file) == "power-on, idle":
         try:
             time.sleep(2)
         except KeyboardInterrupt:
@@ -136,9 +142,10 @@ def doit(val: int, id: str, priority: str, met_url: str, headers: dict) -> None:
         print("sending res to met")
 
         r = requests.post(
-            met_url,
+            send_logs_to_url,
             json={
                 "%Y-%m-%d %H:%M:%S": current_time(),
+                "who": name,
                 "val": val,
                 "res": res,
                 "id": id,

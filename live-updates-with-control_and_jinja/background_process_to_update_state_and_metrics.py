@@ -21,6 +21,8 @@ power-on, shutting-down
 
 if __name__ == "__main__":
 
+    print("started background updates to JSON files")
+
     boot_counter=0
     shutdown_counter=0
 

@@ -1,6 +1,6 @@
 <HTML>
   <head>
-    <title>met</title>
+    <title>logs</title>
   </head>
   <body>
 
@@ -9,15 +9,15 @@
     </P>
 
 <P>
-<a href="{{ this_page_URL }}/met">reload page</a> to view current logs
+<a href="{{ this_page_URL }}">reload page</a> to view current logs
 </P>
 <p>actions</p>
 <UL>
-<LI><a href="{{ this_page_URL }}/met?action=clear">clear history</a></LI>
+<LI><a href="{{ this_page_URL }}?action=clear">clear history</a></LI>
 </UL>
 <P>Log entries:</P>
 {% for line in log_data_list -%}
-    {{ line }}
+    {{ line }}<BR>
 {% endfor %}
 
 {% if msg %}

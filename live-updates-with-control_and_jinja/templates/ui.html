@@ -1,6 +1,6 @@
 <HTML>
   <head>
-    <title>UI</title>
+    <title>ui</title>
   </head>
   <body>
 
@@ -8,9 +8,11 @@
       {{ request_str }}
     </P>
 
+<!--
     <P>
       <a href="{{ this_page_URL }}">reload page</a> to view current logs
     </P>
+  -->
     <p>actions</p>
     <UL>
       <LI><a href="{{ this_page_URL }}?action=turnon">turn on</a></LI>
@@ -37,7 +39,7 @@
 
         setInterval(function () {
           // By default, fetch() makes a GET request
-          fetch('http://localhost:1044/ui').then(function (response) {
+          fetch('{{ server_URL }}/livemetrics').then(function (response) {
             return response.json();
           }).then(function (data) {
             console.log(data)
