@@ -1,0 +1,68 @@
+<HTML>
+  <head>
+    <title>UI</title>
+  </head>
+  <body>
+
+    <p>Request received by server at {{ now }} was <BR>
+      {{ request_str }}
+    </P>
+
+    <P>
+      <a href="{{ this_page_URL }}">reload page</a> to view current logs
+    </P>
+    <p>actions</p>
+    <UL>
+      <LI><a href="{{ this_page_URL }}?action=turnon">turn on</a></LI>
+      <LI><a href="{{ this_page_URL }}?action=new&val=6">new</a></LI>
+      <LI><a href="{{ this_page_URL }}?action=turnoff">turn off</a></LI>
+    </UL>
+
+
+    <P>state: <span id="state">NOT_LOADED</span> as of <span id="state_datetime"></span></P>
+
+    <P>met: <span id="met">NOT_LOADED</span> as of <span id="met_datetime"></span></P>
+
+    {% if msg %}
+    <p>MESSAGE = {{ msg }}</p>
+    {% endif %}
+
+
+    <script>
+      function startLiveUpdate () {
+        const text_state = document.getElementById('state');
+        const text_state_datetime = document.getElementById('state_datetime')
+        const text_met = document.getElementById('met');
+        const text_met_datetime = document.getElementById('met_datetime')
+
+        setInterval(function () {
+          // By default, fetch() makes a GET request
+          fetch('http://localhost:1044/ui').then(function (response) {
+            return response.json();
+          }).then(function (data) {
+            console.log(data)
+              text_state.textContent = data.state;
+              text_met.textContent = data.met;
+              // https://tecadmin.net/get-current-date-time-javascript/
+              var today = new Date();
+              // https://stackoverflow.com/a/3605248/1164295
+              var date = today.getFullYear()+'-'+('0'+today.getMonth()+1).slice(-2)+'-'+('0'+today.getDate()).slice(-2);
+              var time = ('0'+today.getHours()).slice(-2) + ":" + ('0'+today.getMinutes()).slice(-2) + ":" + ('0'+today.getSeconds()).slice(-2);
+              var dateTime = date+'_'+time;
+              text_state_datetime.textContent = dateTime;
+              text_met_datetime.textContent = dateTime;
+          }).catch(function (error) {
+             console.log(error);
+          });
+        }, 2000);
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        startLiveUpdate();
+      });
+    </script>
+
+
+
+</body>
+</HTML>

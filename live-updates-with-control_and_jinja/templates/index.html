@@ -1,0 +1,22 @@
+<HTML>
+  <head>
+    <title>pages</title>
+  </head>
+  <body>
+
+    <p>Request received by server at {{ now }} was <BR>
+      {{ request_str }}
+    </P>
+
+    <P>Pages:</P>
+    <UL>
+      <LI><a href="{{ this_page_URL }}/ui">UI</a></LI>
+      <LI><a href="{{ this_page_URL }}/met">met</a></LI>
+
+
+    {% if msg %}
+    <p>MESSAGE = {{ msg }}</p>
+    {% endif %}
+  </body>
+
+</HTML>

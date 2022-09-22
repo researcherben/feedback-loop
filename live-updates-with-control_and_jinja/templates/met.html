@@ -1,0 +1,30 @@
+<HTML>
+  <head>
+    <title>met</title>
+  </head>
+  <body>
+
+    <p>Request received by server at {{ now }} was <BR>
+      {{ request_str }}
+    </P>
+
+<P>
+<a href="{{ this_page_URL }}/met">reload page</a> to view current logs
+</P>
+<p>actions</p>
+<UL>
+<LI><a href="{{ this_page_URL }}/met?action=clear">clear history</a></LI>
+</UL>
+<P>Log entries:</P>
+{% for line in log_data_list -%}
+    {{ line }}
+{% endfor %}
+
+{% if msg %}
+<p>MESSAGE = {{ msg }}</p>
+{% endif %}
+</body>
+</html>
+
+
+</HTML>
