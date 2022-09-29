@@ -4,9 +4,12 @@ Revised:
 * single UI server
 * use of Jinja templates; see https://zetcode.com/python/jinja/ for tutorial
 
+# HTTPS
 
-# to address deadlock of
-# "GET" calling a function that calls "PUT"
+* https://blog.anvileight.com/posts/simple-python-http-server/
+* https://stackoverflow.com/questions/19705785/python-3-simple-https-server
+
+# to address deadlock of `GET` calling a function that calls `PUT`
 import asyncio
 
 
