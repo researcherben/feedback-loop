@@ -16,19 +16,28 @@
 <LI><a href="{{ this_page_URL }}?action=clear">clear history</a></LI>
 </UL>
 <!-- the following Jinja2 is for when the live updating isn't in effect -->
-<P>Log entries:</P>
 <!--
 { % for line in log_data_list -% }
     { { line } }<BR>
 { % endfor % }
 -->
+<P>Current log entries:</P>
 <ul id="log_container"></ul>
 
 <script>
-// from
-// https://stackoverflow.com/a/55090373/1164295
-let log_list = [];
-const log_container = document.getElementById("log_container");
+function startLiveUpdate () {
+  let log_list = [];
+  const log_container = document.getElementById("log_container");
+
+  setInterval(function () {
+
+    // remove existing list elements (LI)
+    // https://stackoverflow.com/a/3955238/1164295
+    log_container.innerHTML = '';
+
+
+  // create dynamic list from fetch
+  // https://stackoverflow.com/a/55090373/1164295
 fetch('{{ logs_URL }}')
     .then(response => {
         if (response.ok) {
@@ -47,7 +56,16 @@ fetch('{{ logs_URL }}')
             li.appendChild(node);
             log_container.appendChild(li);
         }
-    });
+      }).catch(function (error) {
+         console.log(error);
+      });
+    }, 2000);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    startLiveUpdate();
+  });
+
 </script>
 
 {% if msg %}

@@ -166,7 +166,7 @@ class MyServer(BaseHTTPRequestHandler):
             self.wfile.write(bytes(output, "utf-8"))
 
         elif str(self.path).startswith("/recent_logs"):
-            message = ["hello","world"]
+            message = ["hello","world",str(random.randint(3, 9))]
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.end_headers()
