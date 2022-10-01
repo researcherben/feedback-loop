@@ -39,8 +39,6 @@ logs_filename = "logs.dat" # each line is JSON
 state_filename="machine_state.json"
 met_json = "met.json"
 
-send_logs_to_url = "http://"+hostName+":1044"
-
 headers = {"charset": "utf-8", "Content-Type": "application/json"}
 
 file_loader = jinja2.FileSystemLoader('templates')
@@ -127,6 +125,7 @@ class MyServer(BaseHTTPRequestHandler):
 
             output = logging_html.render(request_str = self.path,
                                     this_page_URL=server_URL+"/logs",
+                                    logs_URL=server_URL+"/recent_logs",
                                     log_data_list=log_data_list,
                                     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             self.send_response(200)
@@ -143,18 +142,16 @@ class MyServer(BaseHTTPRequestHandler):
                 print('action =',action)
                 if action =="turnon":
                     result_of_command = query_and_change_state.poweron_machine(
-                                   "my name", send_logs_to_url,
-                                   headers, state_filename)
+                                   "my name", logs_filename, state_filename)
                     print("result:",result_of_command)
                 elif action =="new":
                     val="23"
                     id="5"
                     result_of_command = query_and_change_state.doit(
-                        "my name",val, id,"soon",
-                        send_logs_to_url, headers, state_filename)
+                        "my name",val, id,"soon",logs_filename, state_filename)
                     print("result:",result_of_command)
                 elif action =="turnoff":
-                    result_of_command = query_and_change_state.poweroff_machine("my name", send_logs_to_url, headers, state_filename)
+                    result_of_command = query_and_change_state.poweroff_machine("my name", logs_filename, state_filename)
                     print("result:",result_of_command)
 
 
@@ -167,6 +164,13 @@ class MyServer(BaseHTTPRequestHandler):
             self.end_headers()
 
             self.wfile.write(bytes(output, "utf-8"))
+
+        elif str(self.path).startswith("/recent_logs"):
+            message = ["hello","world"]
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(bytes(json.dumps(message) + "\n", "utf-8"))
 
 
         elif str(self.path).startswith("/livemetrics"):

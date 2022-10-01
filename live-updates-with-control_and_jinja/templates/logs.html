@@ -15,10 +15,40 @@
 <UL>
 <LI><a href="{{ this_page_URL }}?action=clear">clear history</a></LI>
 </UL>
+<!-- the following Jinja2 is for when the live updating isn't in effect -->
 <P>Log entries:</P>
-{% for line in log_data_list -%}
-    {{ line }}<BR>
-{% endfor %}
+<!--
+{ % for line in log_data_list -% }
+    { { line } }<BR>
+{ % endfor % }
+-->
+<ul id="log_container"></ul>
+
+<script>
+// from
+// https://stackoverflow.com/a/55090373/1164295
+let log_list = [];
+const log_container = document.getElementById("log_container");
+fetch('{{ logs_URL }}')
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error(response.statusText);
+        }
+    })
+    .then(data => {
+        //console.log(data); // expecting a list of strings
+        // https://stackoverflow.com/a/3010848/1164295
+        for (log_entry of data) {
+            //console.log(log_entry);
+            let li = document.createElement("li");
+            let node = document.createTextNode(log_entry);
+            li.appendChild(node);
+            log_container.appendChild(li);
+        }
+    });
+</script>
 
 {% if msg %}
 <p>MESSAGE = {{ msg }}</p>

@@ -4,7 +4,6 @@ import time
 import random
 import sys
 import json
-import requests
 import datetime
 import os
 

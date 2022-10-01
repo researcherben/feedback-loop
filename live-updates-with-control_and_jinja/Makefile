@@ -2,9 +2,8 @@ mytag=py_webservices
 
 #
 .PHONY: help clean \
-	webserver_port1033.py \
-	background_process_to_update_state_and_metrics.py \
-        webserver_logging_port1044.py
+	webserver.py \
+	background_process_to_update_state_and_metrics.py 
 
 help:
 	@echo "make help"
@@ -29,11 +28,8 @@ docker_live:
 viz_Makefile:
 	makefile2dot | dot -Tpng > Makefile_viz.png
 
-webserver_port1033.py:
-	docker run -it --rm -v`pwd`:/scratch -p 1033:1033 -w/scratch $(mytag) python3 webserver_port1033.py
-
-webserver_logging_port1044.py:
-	docker exec -it `docker ps | grep $(mytag) | cut -d' ' -f1` python3 webserver_logging_port1044.py
+webserver.py:
+	docker run -it --rm -v`pwd`:/scratch -p 1033:1033 -w/scratch $(mytag) python3 webserver.py
 
 background_process_to_update_state_and_metrics.py:
 	docker exec -it `docker ps | grep $(mytag) | cut -d' ' -f1` python3 background_process_to_update_state_and_metrics.py
