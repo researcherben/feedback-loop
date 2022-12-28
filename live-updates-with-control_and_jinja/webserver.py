@@ -142,7 +142,7 @@ class MyServer(BaseHTTPRequestHandler):
                 print('action =',action)
                 if action =="turnon":
                     result_of_command = query_and_change_state.poweron_machine(
-                                   "my name", logs_filename, state_filename)
+                                   "my name", logs_filename, state_filename, server_URL)
                     print("result:",result_of_command)
                 elif action =="new":
                     val="23"

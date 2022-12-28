@@ -15,7 +15,12 @@
   -->
     <p>actions</p>
     <UL>
+      <div id="turn_on_available">
       <LI><a href="{{ this_page_URL }}?action=turnon">turn on</a></LI>
+      </div>
+      <div id="turn_on_not_available">
+      <LI>"turn on" disabled</LI>
+      </div>
       <LI><a href="{{ this_page_URL }}?action=new&val=6">new</a></LI>
       <LI><a href="{{ this_page_URL }}?action=turnoff">turn off</a></LI>
     </UL>
@@ -43,6 +48,15 @@
             return response.json();
           }).then(function (data) {
             console.log(data)
+
+ // https://stackoverflow.com/a/40906587/1164295
+ if (data["state"]=="power-on, idle" ) {
+    document.getElementById('turn_on_available').style.display = "none";  // can't turn on if already on
+    document.getElementById('turn_on_not_available').style.display = "block";} // show the place-holder
+  else{ // not power-on, idle
+    document.getElementById('turn_on_available').style.display = "block"; // show "turn on" as an option
+    document.getElementById('turn_on_not_available').style.display = "none";} 
+
               text_state.textContent = data.state;
               text_met.textContent = data.met;
               // https://tecadmin.net/get-current-date-time-javascript/

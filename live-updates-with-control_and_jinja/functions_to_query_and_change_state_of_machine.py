@@ -56,7 +56,7 @@ def write_json_to_log_file(json_to_log, log_filename:str) -> None:
     return
 
 def poweron_machine(name_of_requestor: str,
-                 log_filename: str, state_json_file:str) -> str:
+                 log_filename: str, state_json_file:str, send_logs_to_url: str) -> str:
     """ """
     state = query_state(state_json_file)
     print("according to 'query and change.py', state =",state)

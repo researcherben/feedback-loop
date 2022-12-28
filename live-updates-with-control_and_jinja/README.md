@@ -54,7 +54,7 @@ Open 3 terminals in this order:
 ### terminal 1:
 
 ```bash
-make clean; make webserver_port1033.py
+make clean; make webserver.py
 ```
 
 ### terminal 2:
