@@ -50,7 +50,8 @@
             console.log(data)
 
  // https://stackoverflow.com/a/40906587/1164295
- if (data["state"]=="power-on, idle" ) {
+// if (data["state"]=="power-on, idle" ) {
+   if (data["state"].includes("power-on")){
     document.getElementById('turn_on_available').style.display = "none";  // can't turn on if already on
     document.getElementById('turn_on_not_available').style.display = "block";} // show the place-holder
   else{ // not power-on, idle
