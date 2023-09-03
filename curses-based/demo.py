@@ -6,10 +6,12 @@ from https://stackoverflow.com/a/26176680/1164295
 """
 
 import curses, curses.panel
+import datetime
 import random
 import time
 import sys
-import select
+import select # https://docs.python.org/3/library/select.html
+import json
 
 # gui = None
 
@@ -69,9 +71,6 @@ class ui:
 
         self.win_ctrl = curses.newwin(10, 50, active_data_window_height+1, 0)
         self.win_ctrl.border(0)
-        self.win_ctrl.addstr(1, 1, "Control panel")
-        self.win_ctrl.addstr(3, 1, "Press 's' to switch windows or 'q' to quit.")
-        self.win_ctrl.addstr(8, 1, "Don't kill this using ctrl+c or ctrl-z")
         self.pan_ctrl = curses.panel.new_panel(self.win_ctrl)
 
 
@@ -163,45 +162,159 @@ class feeder:
         self.feed()
 
     def feed(self):
+        # name=None
+        # get_name=False
         while self.running :
+            this_time = datetime.datetime.today()+datetime.timedelta(minutes=self.count)
+            time_str = datetime.datetime.strftime(this_time, "%Y-%m-%d %H:%M") # https://strftime.org/
+
+            # initial read
+            with open("state.json",'r') as file_handle:
+                state_data = json.load(file_handle)
+
+            # make modifications based on config
+            if 'app' in state_data.keys():
+                if 'dur' in state_data.keys():
+                    state_data['dur'] += 1
+                    if state_data['dur']>10:
+                        state_data = {'state':'on'}
+                    with open("state.json",'w') as file_handle:
+                        json.dump(state_data,file_handle)
+            if 'd' in state_data.keys():
+                if 'dur' in state_data.keys():
+                    state_data['dur'] += 1
+                    if state_data['dur']>10:
+                        state_data = {'state':'on'}
+                    with open("state.json",'w') as file_handle:
+                        json.dump(state_data,file_handle)
+
+
+            # # reload state
+            # with open("state.json",'r') as file_handle:
+            #     state_data = json.load(file_handle)
+
+            if state_data['state']=='on':
+                p = int(round(random.random()*9))+3
+                if 'app' in state_data.keys():
+                    if state_data['app']=='running':
+                        p = p + int(round(random.random()*100))+20
+            else:
+                p = 0
+
             while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                # get_name=False
                 line = sys.stdin.read(1)
-                if line.strip() == "q":
+                if line.strip() == "q": # quit
                     self.stop()
                     self.ui.quit_ui()
                     break
-                elif line.strip() == "s":
+                elif line.strip() == "s": # switch
                     self.ui.switch_pan()
+                elif line.strip() == "p": # cycle
+                    if state_data['state']=='on':
+                        with open("state.json",'w') as file_handle:
+                            json.dump({'state':'off'},file_handle)
+                    elif state_data['state']=='off':
+                        with open("state.json",'w') as file_handle:
+                            json.dump({'state':'on'},file_handle)
+                    else:
+                        raise Exception("Invalid state in state.json; should be 'on' or 'off'")
+                elif line.strip() == "r": # run
+                    with open("state.json",'w') as file_handle:
+                        json.dump({'state':'on','app':'running','dur': 0},file_handle)
+                elif line.strip() == "t": # terminate
+                    with open("state.json",'w') as file_handle:
+                        json.dump({'state':'on','app':'inactive'},file_handle)
+                elif line.strip() == "d": #
+                    with open("state.json",'w') as file_handle:
+                        json.dump({'state':'on','d':'running','dur': 0},file_handle)
+
+
 
             # populate the window with random content that is dynamically changing
             if self.ui.pan2.hidden() and self.ui.pan3.hidden(): # 1 is shown
-                self.ui.win1.erase()
+                self.ui.win1.erase() # https://stackoverflow.com/a/43486979/1164295
                 self.ui.win1.border(0)
                 self.ui.win1.addstr(1, 1, "Window 1")
-                self.ui.win1.addstr(3, 1, str(self.count)+\
-                                 ": "+str(int(round(random.random()*99))))
-                self.ui.win1.addstr(4, 1, str(self.running))
+                self.ui.win1.addstr(3, 1, str(time_str)+" | p: "+str(p))
+                #self.ui.win1.addstr(4, 1, str(self.running))
+                self.ui.win1.addstr(4, 1, str(state_data))
+
+                self.ui.win_ctrl.erase()
+                self.ui.win_ctrl.border(0)
+                self.ui.win_ctrl.addstr(1, 1, "Control panel")
+                self.ui.win_ctrl.addstr(3, 1, "Press 's' to switch windows; 'q' to quit;")
+                if state_data['state']=='on':
+                    self.ui.win_ctrl.addstr(4, 1, "'p' to turn off")
+                    self.ui.win_ctrl.addstr(5, 1, "'d' to d")
+                elif state_data['state']=='off':
+                    self.ui.win_ctrl.addstr(4, 1, "'p' to turn on")
+                else:
+                    raise Exception("Invalid state in state.json; should be 'on' or 'off'")
+
+                self.ui.win_ctrl.addstr(8, 1, "Don't kill this using ctrl+c or ctrl-z")
+
 
             if self.ui.pan1.hidden() and self.ui.pan3.hidden(): # 2 is shown
-                self.ui.win2.erase()
+                self.ui.win2.erase() # https://stackoverflow.com/a/43486979/1164295
                 self.ui.win2.border(0)
                 self.ui.win2.addstr(1, 1, "Window 2")
-                self.ui.win2.addstr(3, 1, str(self.count)+\
-                                    ": "+str(int(round(random.random()*9999))))
-                self.ui.win2.addstr(4, 1, str(self.running))
+                self.ui.win2.addstr(3, 1, str(time_str))#+": "+str(p)) # don't show `p` in win2
+                #self.ui.win2.addstr(4, 1, str(self.running))
+                self.ui.win2.addstr(4, 1, str(state_data))
+
+                self.ui.win_ctrl.erase()
+                self.ui.win_ctrl.border(0)
+                self.ui.win_ctrl.addstr(1, 1, "Control panel")
+                self.ui.win_ctrl.addstr(3, 1, "Press 's' to switch windows; 'q' to quit;")
+                if state_data['state']=='on':
+                    if 'app' in state_data.keys():
+                        if state_data['app']=='running':
+                            self.ui.win_ctrl.addstr(4, 1, "'t' to terminate")
+                        else: # not running
+                            self.ui.win_ctrl.addstr(4, 1, "'r' to run")
+                    else: # on but no app
+                        self.ui.win_ctrl.addstr(4, 1, "'r' to run")
+
+                elif state_data['state']=='off':
+                    pass
+                else:
+                    raise Exception("Invalid state in state.json; should be 'on' or 'off'")
+
+                # self.ui.win_ctrl.addstr(5, 1, "'n' to name")
+                # https://stackoverflow.com/a/21785167/1164295
+                # if get_name:
+                #     self.ui.win_ctrl.addstr(7,0,"name:")
+                #     name = str(self.ui.win_ctrl.getstr(7,6, 25))
+                # if name:
+                #     self.ui.win_ctrl.addstr(7,0,"name:"+name)
+
+                self.ui.win_ctrl.addstr(8, 1, "Don't kill this using ctrl+c or ctrl-z")
+
 
             if self.ui.pan1.hidden() and self.ui.pan2.hidden(): # 3 is shown
-                self.ui.win3.erase()
+                self.ui.win3.erase() # https://stackoverflow.com/a/43486979/1164295
                 self.ui.win3.border(0)
                 self.ui.win3.addstr(1, 1, "Window 3")
-                self.ui.win3.addstr(3, 1, str(self.count)+\
+                self.ui.win3.addstr(3, 1, time_str+\
                                     ": "+str(int(round(random.random()*99999999))))
-                self.ui.win3.addstr(4, 1, str(self.running))
+                #self.ui.win3.addstr(4, 1, str(self.running))
+                self.ui.win3.addstr(4, 1, str(state_data))
+
+                self.ui.win_ctrl.erase()
+                self.ui.win_ctrl.border(0)
+                self.ui.win_ctrl.addstr(1, 1, "Control panel")
+                self.ui.win_ctrl.addstr(3, 1, "Press 's' to switch windows; 'q' to quit;")
+                self.ui.win_ctrl.addstr(8, 1, "Don't kill this using ctrl+c or ctrl-z")
+
 
             self.ui.refresh()
             time.sleep(0.5)
             self.count += 1
 
 if __name__ == "__main__":
+    with open("state.json",'w') as file_handle:
+        json.dump({'state':'off'},file_handle)
+
     f = feeder()
     f.run()
