@@ -11,7 +11,7 @@ import time
 import sys
 import select
 
-# gui = None
+gui = None
 
 class ui:
     def __init__(self):
@@ -23,21 +23,19 @@ class ui:
 
         self.win1 = curses.newwin(10, 50, 0, 0)    
         self.win1.border(0)
-        self.win1.addstr(1, 1, "Window 1")
         self.pan1 = curses.panel.new_panel(self.win1)
-        self.pan1.hide()
-
         self.win2 = curses.newwin(10, 50, 0, 0)    
         self.win2.border(0)
-        self.win2.addstr(1, 1, "Window 2")
         self.pan2 = curses.panel.new_panel(self.win2)
-
         self.win3 = curses.newwin(10, 50, 12, 0)
         self.win3.border(0)
-        self.win3.addstr(1, 1, "Control panel")
-        self.win3.addstr(3, 1, "Press 's' to switch windows or 'q' to quit.")
         self.pan3 = curses.panel.new_panel(self.win3)
 
+        self.win1.addstr(1, 1, "Window 1")
+        self.win2.addstr(1, 1, "Window 2")
+        self.win3.addstr(1, 1, "Press 's' to switch windows or 'q' to quit.")
+
+        self.pan1.hide()
 
     def refresh(self):
         curses.panel.update_panels()
@@ -64,12 +62,12 @@ class ui:
         curses.curs_set(1)
         curses.echo()
         curses.endwin()
-        print("UI terminated")
+        print("UI quitted")
         exit(0)
 
 
 class feeder:
-    # Fake UI feeder
+    # Fake U.I feeder
     def __init__(self):
         self.running = False
         self.ui = ui()
@@ -100,7 +98,7 @@ class feeder:
                                 ": "+str(int(round(random.random()*999))))
             self.ui.win2.addstr(4, 1, str(self.running))
             self.ui.refresh()
-            time.sleep(0.5)
+            time.sleep(0.1)
             self.count += 1
 
 if __name__ == "__main__":
