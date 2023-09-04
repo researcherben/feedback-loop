@@ -2,10 +2,10 @@
 # -*- coding: iso-8859-1 -*-
 
 """
-from https://stackoverflow.com/a/26176680/1164295
+based on https://stackoverflow.com/a/26176680/1164295
 """
 
-import curses, curses.panel
+import curses, curses.panel # https://docs.python.org/3/howto/curses.html
 import datetime
 import random
 import time
@@ -18,6 +18,7 @@ import json
 class ui:
     def __init__(self):
         ##### Begin boilerplate for curses configuration #####
+
         # Before doing anything, curses must be initialized. This is done by
         # calling the initscr() function, which will determine the terminal type,
         # send any required setup codes to the terminal, and create various
@@ -318,3 +319,8 @@ if __name__ == "__main__":
 
     f = feeder()
     f.run()
+
+    # possible TODO: use curses.wrapper() to handle exceptions. 
+    # See <https://www.devdungeon.com/content/curses-programming-python>
+
+# EOF
